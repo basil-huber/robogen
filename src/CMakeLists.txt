@@ -384,6 +384,11 @@ else() ############################## C++ VERSION #####################
 	add_executable(robogen-file-viewer viewer/FileViewer.cpp)
 	target_link_libraries(robogen-file-viewer robogen ${ROBOGEN_DEPENDENCIES})
 
+	# Robot Viewer (from file)
+	add_executable(inertia-test inertiaTest.cpp)
+	target_link_libraries(inertia-test robogen ${ROBOGEN_DEPENDENCIES})
+
+
 	if (Qt5Core_FOUND)
 		if(MAKE_JS_TEST)
 			message(STATUS "MAKING js-test")

@@ -174,7 +174,7 @@ public:
 	 * Create a capsule geometry for the body
 	 * @param mass
 	 * @param pos
-	 * @param direction
+	 * @param direction 	direction of symmetrical axis: x=1,  y=2,  z=3
 	 * @param radius
 	 * @param height
 	 * @param label
@@ -186,7 +186,7 @@ public:
 	 * Create a cylinder geometry for the body
 	 * @param mass
 	 * @param pos
-	 * @param direction
+	 * @param direction 	direction of symmetrical axis: x=1,  y=2,  z=3
 	 * @param radius
 	 * @param height
 	 * @param label
