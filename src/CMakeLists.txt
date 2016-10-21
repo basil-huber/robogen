@@ -321,7 +321,7 @@ else() ############################## C++ VERSION #####################
 		PartList.cpp
 		Simulator.cpp
 		test/Test*.cpp
-		test/inertialTest.cpp
+		test/collisionTest.cpp
 		)
 
 
@@ -387,8 +387,8 @@ else() ############################## C++ VERSION #####################
 	target_link_libraries(robogen-file-viewer robogen ${ROBOGEN_DEPENDENCIES})
 
 	# Robot Viewer (from file)
-	add_executable(inertia-test test/inertiaTest.cpp)
-	target_link_libraries(inertia-test robogen ${ROBOGEN_DEPENDENCIES})
+	add_executable(collision-test test/collisionTest.cpp)
+	target_link_libraries(collision-test robogen ${ROBOGEN_DEPENDENCIES})
 
 
 	if (Qt5Core_FOUND)
