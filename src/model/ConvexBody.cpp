@@ -54,6 +54,9 @@ ConvexBody::ConvexBody(boost::shared_ptr<Model> model, dMass mass,unsigned int p
 	}
 	polygons_ = new unsigned int[length];
 	memcpy(polygons_, polygons, length * sizeof(unsigned int));
+
+	// set correct pointers to buffers stored in this class
+	dGeomSetConvex(getGeom(), planes_, planeCount_, points_, pointCount_, polygons_);
 }
 
 
