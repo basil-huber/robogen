@@ -1,10 +1,10 @@
 /*
- * @(#) CoreComponentRenderModel.h   1.0   Feb 5, 2013
+ * @(#) TestSphereModel.cpp   1.0   Feb 8, 2013
  *
- * Andrea Maesani (andrea.maesani@epfl.ch)
+ * Basil Huber (basil.huber@epfl.ch)
  *
  * The ROBOGEN Framework
- * Copyright © 2012-2013 Andrea Maesani
+ * Copyright © 2012-2015 Andrea Maesani, Joshua Auerbach
  *
  * Laboratory of Intelligent Systems, EPFL
  *
@@ -25,28 +25,22 @@
  *
  * @(#) $Id$
  */
-#ifndef ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_
-#define ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_
-
-#include "model/components/TestComponentModel.h"
-#include "render/RenderModel.h"
+#include "test/TestSphereModel.h"
 
 namespace robogen {
 
-class TestComponentRenderModel : public RenderModel {
 
-public:
+TestSphereModel::TestSphereModel(dWorldID odeWorld, dSpaceID odeSpace, std::string id) :
+		TestComponentModel(odeWorld, odeSpace, id)
+{}
 
-	TestComponentRenderModel(boost::shared_ptr<TestComponentModel> model);
+TestSphereModel::~TestSphereModel() {
+}
 
-	virtual ~TestComponentRenderModel();
-
-	virtual bool initRenderModel();
-
-	virtual void setColor(osg::Vec4 color);
-};
-
+bool TestSphereModel::initModel() {
+	rootBody_ = this->addBox(inGrams(1), osg::Vec3(), inMm(2), inMm(2), inMm(2),771);
+	return true;
 }
 
 
-#endif /* ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_ */
+}

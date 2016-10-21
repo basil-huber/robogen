@@ -1,5 +1,5 @@
 /*
- * @(#) TestComponentModel.cpp   1.0   Feb 8, 2013
+ * @(#) TestSphereModel.h   1.0   Feb 8, 2013
  *
  * Basil Huber (basil.huber@epfl.ch)
  *
@@ -25,47 +25,35 @@
  *
  * @(#) $Id$
  */
-#include "model/components/TestComponentModel.h"
+#ifndef ROBOGEN_TEST_SPHEREMODEL_H_
+#define ROBOGEN_TEST_SPHEREMODEL_H_
+
+#include "test/TestComponentModel.h"
 
 namespace robogen {
 
+class TestSphereModel: public TestComponentModel {
 
-TestComponentModel::TestComponentModel(dWorldID odeWorld, dSpaceID odeSpace, std::string id) :
-		Model(odeWorld, odeSpace, id)
-{}
+public:
 
-TestComponentModel::~TestComponentModel() {
+	/**
+	 * Initializes a CoreComponentModel
+	 * @param odeWorld
+	 * @param odeSpace
+	 * @param id
+	 * @param isCore should be true for the core/root node and will therefore
+	 * 			include mass of electronics.  If isCore is true but hasSensors
+	 * 			is false then will not consider IMU
+	 * @param hasSensors if true the core component will contain gyro and
+	 * 			accelerometer sensors, if false it won't provide any sensor
+	 */
+	TestSphereModel(dWorldID odeWorld, dSpaceID odeSpace, std::string id);
 
-}
+	virtual ~TestSphereModel();
 
-bool TestComponentModel::initModel() {
-
-	rootBody_ = this->addCylinder(
-			inGrams(100),
-			osg::Vec3(), 1,
-			inMm(10), inMm(200), 0);
-
-	return true;
-}
-
-boost::shared_ptr<SimpleBody> TestComponentModel::getRoot() {
-	return rootBody_;
-}
-
-boost::shared_ptr<SimpleBody> TestComponentModel::getSlot(unsigned int /*i*/) {
-	return rootBody_;
-}
-
-osg::Vec3 TestComponentModel::getSlotPosition(unsigned int i) {
-	return osg::Vec3();
-}
-
-osg::Vec3 TestComponentModel::getSlotAxis(unsigned int i) {
-	return osg::Vec3();
-}
-
-osg::Vec3 TestComponentModel::getSlotOrientation(unsigned int i) {
-	return osg::Vec3();
-}
+	virtual bool initModel();
+};
 
 }
+
+#endif /* ROBOGEN_TEST_SPHEREMODEL_H_ */

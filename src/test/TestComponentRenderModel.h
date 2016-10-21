@@ -1,11 +1,10 @@
 /*
- * @(#) CoreComponentRenderModel.cpp   1.0   Feb 5, 2013
+ * @(#) CoreComponentRenderModel.h   1.0   Feb 5, 2013
  *
  * Andrea Maesani (andrea.maesani@epfl.ch)
- * Joshua Auerbach (joshua.auerbach@epfl.ch)
  *
  * The ROBOGEN Framework
- * Copyright © 2012-2014 Andrea Maesani, Joshua Auerbach
+ * Copyright © 2012-2013 Andrea Maesani
  *
  * Laboratory of Intelligent Systems, EPFL
  *
@@ -26,37 +25,28 @@
  *
  * @(#) $Id$
  */
-#include <osgDB/ReadFile>
+#ifndef ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_
+#define ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_
 
-#include "render/callback/BodyCallback.h"
-
-#include "render/components/TestComponentRenderModel.h"
-
-#include "utils/RobogenUtils.h"
+#include "model/Model.h"
+#include "render/RenderModel.h"
 
 namespace robogen {
 
-TestComponentRenderModel::TestComponentRenderModel(
-		boost::shared_ptr<TestComponentModel> model) :
-		RenderModel(model) {
-}
+class TestComponentRenderModel : public RenderModel {
 
-TestComponentRenderModel::~TestComponentRenderModel() {
-}
+public:
 
-bool TestComponentRenderModel::initRenderModel() {
+	TestComponentRenderModel(boost::shared_ptr<Model> model);
 
-	
-	std::vector<osg::ref_ptr<osg::PositionAttitudeTransform> > pats = this->attachGeoms();
-	if (isDebugActive()) {
-		attachAxis(pats[0]);
-	}
-	return true;
+	virtual ~TestComponentRenderModel();
+
+	virtual bool initRenderModel();
+
+	virtual void setColor(osg::Vec4 color);
+};
 
 }
 
 
-void TestComponentRenderModel::setColor(osg::Vec4 color) {
-}
-
-}
+#endif /* ROBOGEN_TEST_COMPONENT_RENDER_MODEL_H_ */

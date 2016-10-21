@@ -320,6 +320,8 @@ else() ############################## C++ VERSION #####################
 		Robogen.cpp
 		PartList.cpp
 		Simulator.cpp
+		test/Test*.cpp
+		test/inertialTest.cpp
 		)
 
 
@@ -385,7 +387,7 @@ else() ############################## C++ VERSION #####################
 	target_link_libraries(robogen-file-viewer robogen ${ROBOGEN_DEPENDENCIES})
 
 	# Robot Viewer (from file)
-	add_executable(inertia-test inertiaTest.cpp)
+	add_executable(inertia-test test/inertiaTest.cpp)
 	target_link_libraries(inertia-test robogen ${ROBOGEN_DEPENDENCIES})
 
 

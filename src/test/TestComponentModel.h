@@ -63,10 +63,24 @@ public:
 
 	virtual osg::Vec3 getSlotAxis(unsigned int i);
 
-private:
+	enum class Color{
+		RED,
+		GREEN,
+		BLUE,
+		BLACK,
+		WHITE
+	};
+	void setColor(Color color);
+
+	void setColor(osg::Vec4 color);
+
+	inline osg::Vec4 getColor() {return color_;}
+
+protected:
 
 	boost::shared_ptr<SimpleBody> rootBody_;
 
+	osg::Vec4 color_;
 };
 
 }
