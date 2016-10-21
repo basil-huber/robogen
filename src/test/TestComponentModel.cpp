@@ -70,10 +70,10 @@ bool TestComponentModel::initModel() {
 	dReal points[3*pointCount] = 
              {-LENGTH/2,  WIDTH/2,  -HEIGHT/2,	// point0
               -LENGTH/2, -WIDTH/2, 	-HEIGHT/2,	// point1
-          	   		  0, -WIDTH  , 	-HEIGHT/2,	// point2
+          	   		    0, -WIDTH  , 	-HEIGHT/2,	// point2
           	   LENGTH/2, -WIDTH/2, 	-HEIGHT/2,	// point3
           	   LENGTH/2,  WIDTH/2, 	-HEIGHT/2,	// point4
-          	 		  0,  WIDTH  , 	-HEIGHT/2,	// point5
+          	 		      0,  WIDTH  , 	-HEIGHT/2,	// point5
               -LENGTH/2,  WIDTH/2,   HEIGHT/2,  // point6
               -LENGTH/2, -WIDTH/2,   HEIGHT/2,  // point7
                       0, -WIDTH  ,   HEIGHT/2,  // point8
@@ -92,8 +92,8 @@ bool TestComponentModel::initModel() {
     		 4,    3,  4, 10,  9,  			// face 3
     		 4,    4,  5, 11, 10,			// face 4
     		 4,    5,  0,  6, 11,			// face 5 
-    		 6,    5,  4,  3,  2, 1,  0,	// bottom face
-    		 6,   11, 10,  9,  8, 7,  6};	// top face
+    		 6,    5,  4,  3,  2,  1,  0,	// bottom face
+    		 6,    6,  7,  8,  9, 10, 11};	// top face
 
    	// An array of planes in the form: normal X, normal Y, normal Z,Distance
    	dReal planes[4*planeCount];
@@ -121,6 +121,7 @@ bool TestComponentModel::initModel() {
     planes[4*(faceCount+1)+3] = HEIGHT/2; // Distance of the plane to the origin
 
 	rootBody_ = addConvex(massOde, pos, pointCount, points, planeCount, planes, polygons, 0);
+  //rootBody_ = addBox(inGrams(50), osg::Vec3(), LENGTH, WIDTH, HEIGHT, 0);
 	return true;
 }
 

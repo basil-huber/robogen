@@ -27,6 +27,7 @@
  * @(#) $Id$
  */
 #include <osgDB/ReadFile>
+#include <osg/ShapeDrawable>
 
 #include "render/callback/BodyCallback.h"
 
@@ -57,9 +58,9 @@ bool TestComponentRenderModel::initRenderModel() {
 		colors.push_back(osg::Vec4(1,1,1,0.5f));
 	}
 
-	std::vector<osg::ref_ptr<osg::PositionAttitudeTransform> > pats = this->attachGeoms(colors);
+	pats_ = this->attachGeoms(colors);
 	if (isDebugActive()) {
-		attachAxis(pats[0]);
+		attachAxis(pats_[0]);
 	}
 
 	return true;
@@ -67,6 +68,36 @@ bool TestComponentRenderModel::initRenderModel() {
 
 
 void TestComponentRenderModel::setColor(osg::Vec4 color) {
+	
+	for(std::vector<osg::ref_ptr<osg::PositionAttitudeTransform> >::iterator it = pats_.begin(); it != pats_.end(); it++)
+	{
+		osg::ref_ptr<osg::PositionAttitudeTransform> pat = (*it);
+		for(int i = 0; i < pat->getNumChildren(); i++)
+		{
+			osg::Geode* geode = dynamic_cast<osg::Geode*>(pat->getChild(i));
+			if(!geode)
+				continue;
+			for(int j=0; j < geode->getNumDrawables(); j++)
+			{
+				osg::Drawable* drawable = geode->getDrawable(j);
+
+				osg::Geometry* geometry = dynamic_cast<osg::Geometry*>(drawable);
+				if(geometry)
+				{
+					osg::Vec4Array* colors = new osg::Vec4Array;
+					colors->push_back(color);
+    				geometry->setColorArray(colors);
+					geometry->setColorBinding(osg::Geometry::BIND_OVERALL );
+				}else{
+					osg::ShapeDrawable* shape = dynamic_cast<osg::ShapeDrawable*>(drawable);
+					if(shape)
+					{
+						shape->setColor(color);
+					}
+				}
+			}
+		}
+	}
 }
 
 }

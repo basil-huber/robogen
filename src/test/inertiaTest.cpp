@@ -9,10 +9,18 @@
 
 using namespace robogen;
 
+#define MAX_CONTACTS 50
+
 dWorldID odeWorld;
 dJointGroupID odeContactGroup;
 
 
+std::map<dGeomID, boost::shared_ptr<TestComponentRenderModel> > spheresMap;
+std::vector<boost::shared_ptr<TestSphereModel> > spheres;
+dGeomID testComponentGeomID;
+boost::shared_ptr<TestComponentRenderModel> testRender;
+
+void odeCollisionCallback(void*, dGeomID o1, dGeomID o2);
 
 int main( int argc, const char* argv[] )
 {
@@ -57,10 +65,11 @@ int main( int argc, const char* argv[] )
 	testComponent->initModel();
 	testComponent->setRootPosition(osg::Vec3(0, 0, 0));
 	dBodyID body = testComponent->getRoot()->getBody();
+	testComponentGeomID = testComponent->getRoot()->getGeom();
 	const dReal* ang_vel = dBodyGetAngularVel(body);
 	const dReal* quat = dBodyGetQuaternion(body);
 
-	boost::shared_ptr<TestComponentRenderModel> testRender(new TestComponentRenderModel(testComponent));
+	testRender = boost::shared_ptr<TestComponentRenderModel>(new TestComponentRenderModel(testComponent));
 	testRender->setDebugActive(true);
 	testRender->initRenderModel();
 	root->addChild(testRender->getRootNode());
@@ -69,13 +78,12 @@ int main( int argc, const char* argv[] )
 	 *       Create small sphere's
 	 *---------------------------------------*/
 	
-	std::vector<boost::shared_ptr<TestSphereModel> > spheres;
 	std::vector<boost::shared_ptr<TestComponentRenderModel> > sphereRenders;
 	int i_sphere = 0;
 	std::cout << "Creating spheres" << std::endl;
-	for(float x = -inMm(60); x < inMm(60); x += inMm(20))
+	for(float x = -inMm(70); x < inMm(70); x += inMm(5))
 	{
-		for(float y = -inMm(60); y < inMm(60); y += inMm(20))
+		for(float y = -inMm(70); y < inMm(70); y += inMm(5))
 		{
 			std::string sphereID("sphere");
 			sphereID.append(std::to_string(i_sphere++));
@@ -89,6 +97,8 @@ int main( int argc, const char* argv[] )
 
 			spheres.push_back(testSphere);
 			sphereRenders.push_back(testSphereRender);
+			dGeomID geomID = testSphere->getRoot()->getGeom(); 
+			spheresMap[geomID] = testSphereRender;
 		}
 	}
 	std::cout << "Finished Creating spheres" << std::endl;
@@ -122,11 +132,16 @@ int main( int argc, const char* argv[] )
 		prevTime = now;
 
 		while (deltaSecs > MAX_STEP) {
+			
+			// reset color of all spheres to green
+			for(std::map<dGeomID, boost::shared_ptr<TestComponentRenderModel> >::iterator it = spheresMap.begin(); it != spheresMap.end(); it++)
+			{
+				it->second->setColor(osg::Vec4(0,1,0,1));
+			}
+			// calculate collisions
+			dSpaceCollide(odeSpace, 0, odeCollisionCallback);
 
-			//setupCollision(touchSensors);
-
-			//dSpaceCollide(odeSpace, 0, odeCollisionCallback);
-
+			
 			const double step = std::min(MAX_STEP, deltaSecs);
 			deltaSecs -= MAX_STEP;
 
@@ -157,61 +172,49 @@ int main( int argc, const char* argv[] )
 }
 
 
-void odeCollisionCallback(void*, dGeomID o1, dGeomID o2) {
+void odeCollisionCallback(void*, dGeomID o1, dGeomID o2)
+{
+	boost::shared_ptr<TestComponentRenderModel> sphereRender = NULL;
 
-	const int MAX_CONTACTS = 8; // maximum number of contact points per body
+	// check if o1 is the testComponent
+	if(o1 == testComponentGeomID)
+	{
+		// look for o2 in spheresMap
+		if(spheresMap.find(o2) != spheresMap.end())
+		{
+			sphereRender = spheresMap[o2];
+		}
+	} else if(o2 == testComponentGeomID)
+	{
+		// look for o1 in spheresMap
+		if(spheresMap.find(o1) != spheresMap.end())
+		{
+			sphereRender = spheresMap[o1];
+		}
+	}
 
-	// exit without doing anything if the two bodies are connected by a joint
-	dBodyID b1 = dGeomGetBody(o1);
-	dBodyID b2 = dGeomGetBody(o2);
-
-	if (b1 && b2 && dAreConnected(b1, b2)) {
+	if(sphereRender == NULL){
 		return;
 	}
 
 	dContact contact[MAX_CONTACTS];
-	for (int i = 0; i < MAX_CONTACTS; i++) {
+	// for (int i = 0; i < MAX_CONTACTS; i++) {
 
-		contact[i].surface.mode = dContactBounce | dContactSoftCFM;
-		contact[i].surface.mu = dInfinity;
-		contact[i].surface.mu2 = 0;
-		contact[i].surface.bounce = 0.01;
-		contact[i].surface.bounce_vel = 0.1;
-		contact[i].surface.soft_cfm = 0.0001;
+	// 	contact[i].surface.mode = dContactBounce | dContactSoftCFM;
+	// 	contact[i].surface.mu = dInfinity;
+	// 	contact[i].surface.mu2 = 0;
+	// 	contact[i].surface.bounce = 0.01;
+	// 	contact[i].surface.bounce_vel = 0.1;
+	// 	contact[i].surface.soft_cfm = 0.0001;
 
-	}
+	// }
 
 	int collisionCounts = dCollide(o1, o2, MAX_CONTACTS, &contact[0].geom,
 			sizeof(dContact));
 
-	if (collisionCounts != 0) {
-		for (int i = 0; i < collisionCounts; i++) {
-
-			dJointID c = dJointCreateContact(odeWorld, odeContactGroup,
-					contact + i);
-			dJointAttach(c, b1, b2);
-
-		}
-
-		/*
-		// Check if one of the two is a touch sensor
-		void* customData1 = dGeomGetData(o1);
-		if (customData1 != NULL) {
-			CustomGeomData* data = (CustomGeomData*) customData1;
-			if (data->getId() == CustomGeomData::TOUCH_SENSOR_INFO) {
-				((TouchSensor::TouchSensorInfo*) data->getData())->touching =
-						true;
-			}
-		}
-
-		void* customData2 = dGeomGetData(o2);
-		if (customData2 != NULL) {
-			CustomGeomData* data = (CustomGeomData*) customData2;
-			if (data->getId() == CustomGeomData::TOUCH_SENSOR_INFO) {
-				((TouchSensor::TouchSensorInfo*) data->getData())->touching =
-						true;
-			}
-		}
-		*/
-	}
+	if(collisionCounts > 0)
+		sphereRender->setColor(osg::Vec4(1,0,0,1));
+	else
+		sphereRender->setColor(osg::Vec4(0,0,1,1));
+	//testRender->setColor(osg::Vec4(0,1,0,1));
 }

@@ -44,6 +44,11 @@ public:
 	virtual bool initRenderModel();
 
 	virtual void setColor(osg::Vec4 color);
+
+private:
+
+	std::vector<osg::ref_ptr<osg::PositionAttitudeTransform> > pats_;
+
 };
 
 }
