@@ -246,6 +246,12 @@ bool Viewer::configureScene(std::vector<boost::shared_ptr<Model> > bodyParts,
 	std::cout << "Press Q to quit the visualizer." << std::endl;
 
 
+	osg::Vec3d eye(-73.5388, -643.876, 1531.77);
+	osg::Vec3d center(-73.4946, -643.49, 1530.85);
+	osg::Vec3d up(0.0, 1, 0.387);
+	//camera->setViewMatrixAsLookAt(eye, center, up);
+	viewer->getCameraManipulator()->setHomePosition(eye, center, up); 
+	//viewer->getCameraManipulator()->home(0);
 	return true;
 
 }
@@ -304,6 +310,12 @@ bool Viewer::frame(double simulatedTime, unsigned int numTimeSteps) {
 	if (this->recording && (numTimeSteps % recordFrequency == 0)) {
 		this->record();
 	}
+
+	osg::Vec3d eye,center,up;// = viewer->getCameraManipulator()->getSideVector(get);
+	camera->getViewMatrixAsLookAt(eye, center, up);
+	std::cout << "eye vector:" << eye.x() << " " << eye.y() << " " << eye.z() << std::endl;
+	std::cout << "center vector:" << center.x() << " " << center.y() << " " << center.z() << std::endl;
+	std::cout << "up vector:" << up.x() << " " << up.y() << " " << up.z() << std::endl;
 
 	return true;
 }
